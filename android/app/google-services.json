@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1008565481874",
+    "project_id": "productinfoscanner",
+    "storage_bucket": "productinfoscanner.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1008565481874:android:e4146786bba53f05c0114b",
+        "android_client_info": {
+          "package_name": "com.productscanner.productscanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1008565481874-jj3o7v5nk2rof4osu8i8k5km09gjs44o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBw0QVX4r3qk1ENz8X4I9RVrG8mPKczLLY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1008565481874-jj3o7v5nk2rof4osu8i8k5km09gjs44o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
