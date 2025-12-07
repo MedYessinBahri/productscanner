@@ -1,3 +1,4 @@
+// lib/services/auth_service.dart
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -7,12 +8,15 @@ class AuthService {
 
   Future<void> signIn(String email, String password) async {
     try {
+      // Try to sign in with fresh credentials
       await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
     } on FirebaseAuthException catch (e) {
       throw _handleAuthError(e);
+    } catch (e) {
+      throw 'An unexpected error occurred: $e';
     }
   }
 
@@ -24,27 +28,47 @@ class AuthService {
       );
     } on FirebaseAuthException catch (e) {
       throw _handleAuthError(e);
+    } catch (e) {
+      throw 'An unexpected error occurred: $e';
     }
   }
 
   Future<void> signOut() async {
-    await _auth.signOut();
+    try {
+      await _auth.signOut();
+    } catch (e) {
+      print('Sign out error: $e');
+      // Try force sign out
+      try {
+        await FirebaseAuth.instance.signOut();
+      } catch (e2) {
+        print('Force sign out error: $e2');
+      }
+    }
   }
 
   String _handleAuthError(FirebaseAuthException e) {
     switch (e.code) {
       case 'user-not-found':
-        return 'Aucun utilisateur trouvé avec cet email.';
+        return 'No user found with this email.';
       case 'wrong-password':
-        return 'Mot de passe incorrect.';
+        return 'Incorrect password. Please try again.';
       case 'email-already-in-use':
-        return 'Cet email est déjà utilisé.';
+        return 'This email is already registered.';
       case 'weak-password':
-        return 'Le mot de passe est trop faible.';
+        return 'Password is too weak. Use at least 6 characters.';
       case 'invalid-email':
-        return 'Email invalide.';
+        return 'Invalid email format.';
+      case 'user-disabled':
+        return 'This account has been disabled.';
+      case 'too-many-requests':
+        return 'Too many attempts. Please try again later.';
+      case 'operation-not-allowed':
+        return 'Email/password sign-in is not enabled.';
+      case 'network-request-failed':
+        return 'Network error. Please check your connection.';
       default:
-        return 'Une erreur est survenue: ${e.message}';
+        return 'Authentication failed: ${e.message ?? "Unknown error"}';
     }
   }
 }
