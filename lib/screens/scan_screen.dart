@@ -20,7 +20,62 @@ class _ScanScreenState extends State<ScanScreen> {
   String _currentMode = 'none';
   String? _selectedImagePath;
 
-  Future<void> _pickImageAndScan(String mode) async {
+  Future<void> _showImageSourceDialog(String mode) async {
+    final colorScheme = Theme.of(context).colorScheme;
+    
+    final ImageSource? source = await showDialog<ImageSource>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Choisir la source'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(Icons.camera_alt, color: colorScheme.primary),
+                ),
+                title: const Text('Prendre une photo'),
+                onTap: () => Navigator.pop(context, ImageSource.camera),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: colorScheme.secondary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(Icons.photo_library, color: colorScheme.secondary),
+                ),
+                title: const Text('Choisir de la galerie'),
+                onTap: () => Navigator.pop(context, ImageSource.gallery),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Annuler'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (source != null) {
+      await _pickImageAndScan(mode, source);
+    }
+  }
+
+  Future<void> _pickImageAndScan(String mode, ImageSource source) async {
     setState(() {
       _isLoading = true;
       _scanResults = [];
@@ -30,7 +85,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
     try {
       final XFile? image = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
+        source: source,
         maxWidth: 1024,
         maxHeight: 1024,
         imageQuality: 85,
@@ -161,7 +216,7 @@ class _ScanScreenState extends State<ScanScreen> {
             : BorderSide.none,
       ),
       child: InkWell(
-        onTap: isDisabled ? null : () => _pickImageAndScan(mode),
+        onTap: isDisabled ? null : () => _showImageSourceDialog(mode),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(20),
