@@ -18,7 +18,6 @@ class _ScanScreenState extends State<ScanScreen> {
   List<String> _scanResults = [];
   bool _isLoading = false;
   String _currentMode = 'none';
-  String? _selectedImagePath;
 
   Future<void> _showImageSourceDialog(String mode) async {
     final colorScheme = Theme.of(context).colorScheme;
@@ -80,7 +79,6 @@ class _ScanScreenState extends State<ScanScreen> {
       _isLoading = true;
       _scanResults = [];
       _currentMode = mode;
-      _selectedImagePath = null;
     });
 
     try {
@@ -92,8 +90,6 @@ class _ScanScreenState extends State<ScanScreen> {
       );
 
       if (image != null) {
-        setState(() => _selectedImagePath = image.path);
-
         if (mode == 'barcode') {
           final results = await _barcodeService.scanBarcodeFromImage(image);
           setState(() => _scanResults = results);
@@ -115,7 +111,6 @@ class _ScanScreenState extends State<ScanScreen> {
     setState(() {
       _scanResults = [];
       _currentMode = 'none';
-      _selectedImagePath = null;
     });
   }
 
@@ -142,10 +137,6 @@ class _ScanScreenState extends State<ScanScreen> {
             // Mode Selection Cards
             _buildModeSelectionCards(context),
             const SizedBox(height: 32),
-
-            // Image Preview
-            if (_selectedImagePath != null) _buildImagePreview(),
-            const SizedBox(height: 24),
 
             // Results Section
             Expanded(child: _buildResultsSection(context)),
@@ -256,28 +247,6 @@ class _ScanScreenState extends State<ScanScreen> {
     );
   }
 
-  Widget _buildImagePreview() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Image sélectionnée',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.asset(
-            _selectedImagePath!,
-            width: double.infinity,
-            height: 150,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildResultsSection(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -371,6 +340,12 @@ class _ScanScreenState extends State<ScanScreen> {
             separatorBuilder: (context, index) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
               final result = _scanResults[index];
+              
+              // Skip empty lines
+              if (result.trim().isEmpty) {
+                return const SizedBox(height: 4);
+              }
+              
               final isError = result.contains('Erreur') || result.contains('Aucun');
 
               return Card(
@@ -402,10 +377,6 @@ class _ScanScreenState extends State<ScanScreen> {
                           ? colorScheme.error
                           : null,
                     ),
-                  ),
-                  trailing: Icon(
-                    Icons.chevron_right,
-                    color: colorScheme.onBackground.withOpacity(0.5),
                   ),
                 ),
               );
