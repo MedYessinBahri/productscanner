@@ -1,0 +1,7 @@
+# This file ensures the sounds directory is tracked by git
+# Add your custom sound files here:
+# - success.mp3
+# - error.mp3
+# - scanning.mp3
+
+# See README.md in this directory for download instructions
