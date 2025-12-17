@@ -28,6 +28,9 @@ dependencies:
   http: ^1.1.0
   # Icons
   cupertino_icons: ^1.0.6
+  # Audio and Haptic Feedback
+  vibration: ^1.8.4  # For vibration feedback on errors
+  audioplayers: ^5.2.1  # For playing success sounds
 
 dev_dependencies:
   flutter_test:
@@ -40,3 +43,4 @@ flutter:
   # Assets for test images
   assets:
     - assets/test_images/
+    - assets/sounds/
