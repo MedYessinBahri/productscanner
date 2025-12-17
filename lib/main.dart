@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'theme/theme_provider.dart';
+import 'services/audio_service.dart';
 
 // Configuration Firebase avec VOS données
 const firebaseConfig = FirebaseOptions(
@@ -25,6 +26,10 @@ void main() async {
   } catch (e) {
     print('❌ Erreur Firebase: $e');
   }
+
+  // Initialize audio service
+  print('🔊 Initialisation du service audio...');
+  await AudioService.initialize();
 
   runApp(
     ChangeNotifierProvider(
