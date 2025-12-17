@@ -23,6 +23,8 @@ dependencies:
   # UI & State Management
   provider: ^6.1.1  # Add this for theme management
   animations: ^2.0.7  # Add this for smooth animations
+  # HTTP requests
+  http: ^1.1.0
   # Icons
   cupertino_icons: ^1.0.6
 
