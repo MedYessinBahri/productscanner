@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/barcode_service.dart';
 import '../services/image_labeling_service.dart';
+import '../services/audio_service.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
@@ -90,18 +91,37 @@ class _ScanScreenState extends State<ScanScreen> {
       );
 
       if (image != null) {
+        // Play scanning sound when starting analysis
+        await AudioService.playScanningSound();
+        
         if (mode == 'barcode') {
           final results = await _barcodeService.scanBarcodeFromImage(image);
           setState(() => _scanResults = results);
+          
+          // Play appropriate sound based on results
+          if (results.isNotEmpty && !results[0].contains('Aucun') && !results[0].contains('Erreur')) {
+            await AudioService.playSuccessSound();
+          } else {
+            await AudioService.playErrorSound();
+          }
         } else if (mode == 'image') {
           final results = await _imageLabelingService.identifyObjectsInImage(image);
           setState(() => _scanResults = results);
+          
+          // Play appropriate sound based on results
+          if (results.isNotEmpty && !results[0].contains('Aucun') && !results[0].contains('Erreur')) {
+            await AudioService.playSuccessSound();
+          } else {
+            await AudioService.playErrorSound();
+          }
         }
       } else {
         setState(() => _scanResults = ['Aucune image sélectionnée']);
+        await AudioService.playErrorSound();
       }
     } catch (e) {
       setState(() => _scanResults = ['Erreur: ${e.toString()}']);
+      await AudioService.playErrorSound();
     } finally {
       setState(() => _isLoading = false);
     }
